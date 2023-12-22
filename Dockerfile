@@ -32,10 +32,10 @@ ARG TARGETVARIANT
 ######### Environment Variables #################################
 
 # Global system-level config
-ENV TZ=UTC \
-    LANGUAGE=en_US:en \
+ENV TZ=Asia/Shanghai \
+    LANGUAGE=zh_CN.UTF-8 \
     LC_ALL=C.UTF-8 \
-    LANG=C.UTF-8 \
+    LANG=zh_CN.UTF-8 \
     DEBIAN_FRONTEND=noninteractive \
     APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 \
     PYTHONIOENCODING=UTF-8 \
@@ -192,7 +192,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=apt-$TARGETARCH$T
     else \
         # fall back to installing Chromium via apt-get on platforms not supported by playwright (e.g. risc, ARMv7, etc.) 
         apt-get install -qq -y -t bookworm-backports --no-install-recommends \
-            chromium fontconfig fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-symbola fonts-noto fonts-freefont-ttf \
+            chromium chromium-l10n fontconfig fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-symbola fonts-noto fonts-freefont-ttf \
         && export CHROME_BINARY="$(which chromium)"; \
     fi \
     && rm -rf /var/lib/apt/lists/* \
