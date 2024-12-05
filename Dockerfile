@@ -65,8 +65,8 @@ ENV PYTHON_VERSION=3.11 \
 
 # User config
 ENV ARCHIVEBOX_USER="archivebox" \
-    DEFAULT_PUID=911 \
-    DEFAULT_PGID=911 \
+    DEFAULT_PUID=1000 \
+    DEFAULT_PGID=1000 \
     IN_DOCKER=True
 
 # Global paths
@@ -238,7 +238,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=apt-$TARGETARCH$T
         which chromium-browser && /usr/bin/chromium-browser --version || /usr/lib/chromium/chromium --version \
         && echo -e '\n\n' \
     ) | tee -a /VERSION.txt
-
+# run locale
+RUN apt-get update && apt-get install -y locales && \
+    locale-gen zh_CN.UTF-8 && \
+    update-locale LANG=zh_CN.UTF-8
 # Install Node dependencies
 ENV PATH="/home/$ARCHIVEBOX_USER/.npm/bin:$PATH"
 USER $ARCHIVEBOX_USER
