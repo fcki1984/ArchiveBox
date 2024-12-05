@@ -268,25 +268,24 @@ RUN ( \
 # Install ArchiveBox Python dependencies
 WORKDIR "$CODE_DIR"
 COPY --chown=root:root --chmod=755 "./pyproject.toml" "requirements.txt" "$CODE_DIR"/
+
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked,id=apt-$TARGETARCH$TARGETVARIANT --mount=type=cache,target=/root/.cache/pip,sharing=locked,id=pip-$TARGETARCH$TARGETVARIANT \
     echo "[+] Installing PIP ArchiveBox dependencies from requirements.txt for ${TARGETPLATFORM}..." \
-    && apt-get update -qq \
+    && echo "[+] Running apt-get update..." \
+    && apt-get update -qq || { echo "[ERROR] Apt-get update failed"; exit 1; } \
+    && echo "[+] Installing system dependencies..." \
     && apt-get install -qq -y -t bookworm-backports \
         build-essential gcc \
         libssl-dev libldap2-dev libsasl2-dev \
         python3-ldap python3-msgpack python3-mutagen python3-regex python3-pycryptodome procps \
-        pipx \
-    # && ln -s "$GLOBAL_VENV" "$APP_VENV" \
-    # && pdm use --venv in-project \
-    # && pdm run python -m ensurepip \
-    # && pdm sync --fail-fast --no-editable --group :all --no-self \
-    # && pdm export -o requirements.txt --without-hashes \
-    # && source $GLOBAL_VENV/bin/activate \
-    && pip install -r requirements.txt \
-    && apt-get purge -y \
-        build-essential gcc \
+        pipx || { echo "[ERROR] Apt-get install failed"; exit 1; } \
+    && echo "[+] Installing Python dependencies from requirements.txt..." \
+    && pip install -v -r requirements.txt || { echo "[ERROR] Pip install failed"; exit 1; } \
+    && echo "[+] Cleaning up..." \
+    && apt-get purge -y build-essential gcc \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Install ArchiveBox Python package from source
 COPY --chown=root:root --chmod=755 "." "$CODE_DIR/"
