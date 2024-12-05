@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - '**'
+      - 'dev'
     tags:
       - 'v*'
   # pull_request:
@@ -32,7 +32,7 @@ jobs:
         with:
           version: latest
           install: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
 
       - name: Builder instance name
         run: echo ${{ steps.buildx.outputs.name }}
@@ -91,7 +91,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: archivebox/archivebox
+          repository: fcki1984/archivebox
 
       # This ugly bit is necessary if you don't want your cache to grow forever
       # until it hits GitHub's limit of 5GB.
